@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Consultar Deudas (Administrador)</h2>
+    
+    <!-- Filtros -->
+    <form method="GET" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label for="estado" class="form-label">Estado</label>
+            <select class="form-select" name="estado" id="estado">
+                <option value="todos">Todos</option>
+                <option value="pendiente" {% if request.args.get('estado') == 'pendiente' %}selected{% endif %}>
+                    Pendiente
+                </option>
+                <option value="pagada" {% if request.args.get('estado') == 'pagada' %}selected{% endif %}>
+                    Pagada
+                </option>
+            </select>
+        </div>
+        <div class="col-md-5">
+            <label for="apodo" class="form-label">Apodo del Cliente</label>
+            <input type="text" class="form-control" name="apodo" id="apodo" 
+                   value="{{ request.args.get('apodo', '') }}">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+            <a href="{{ url_for('consultar_deudas') }}" class="btn btn-secondary">Limpiar</a>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Apodo</th>
+                    <th>Total (USD)</th>
+                    <th>Saldo (USD)</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for deuda in deudas %}
+                <tr>
+                    <td>{{ deuda.id }}</td>
+                    <td>{{ deuda.fecha.strftime('%d/%m/%Y') }}</td>
+                    <td>
+                        {% if deuda.cliente %}
+                            {{ deuda.cliente.nombre }}
+                        {% else %}
+                            {{ deuda.cliente_apodo }}
+                        {% endif %}
+                    </td>
+                    <td>{{ deuda.cliente_apodo }}</td>
+                    <td>{{ deuda.get_total() }}</td>
+                    <td>{{ deuda.get_saldo_pendiente() }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'success' if deuda.estado == 'pagada' else 'warning' }}">
+                            {{ deuda.estado|capitalize }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            
+                            <!-- Gestionar pagos -->
+                            <a href="{{ url_for('gestion_deudas', cliente_id=deuda.cliente_id) }}" 
+                               class="btn btn-sm btn-info" title="Gestionar Pagos">
+                                <i class="bi bi-cash-coin"></i>
+                            </a>
+                            
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center">No hay deudas registradas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

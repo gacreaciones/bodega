@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Panel de Control</h1>
+    <p>Bienvenido, {{ current_user.username }}!</p>
+    
+    <div class="row mt-4">
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Registrar Producto</h5>
+                    <a href="{{ url_for('registrar_producto') }}" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Gestionar Productos</h5>
+                    <a href="{{ url_for('listar_productos') }}" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Registrar Cliente</h5>
+                    <a href="{{ url_for('registrar_cliente') }}" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Gestionar Clientes</h5>
+                    <a href="{{ url_for('listar_clientes') }}" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Registrar Deuda</h5>
+                    <a href="{{ url_for('registrar_deuda') }}" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Consultar Deudas (Admin)</h5>
+                    <a href="{{ url_for('consultar_deudas') }}" class="btn btn-primary">Ir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

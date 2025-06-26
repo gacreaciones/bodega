@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h4>Deudas de {{ cliente.nombre }} ({{ cliente.apodo }})</h4>
+    </div>
+    <div class="card-body">
+        {% if deudas %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario (USD)</th>
+                            <th>Subtotal (USD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set total_general = namespace(value=0) %}
+                        {% for deuda in deudas %}
+                            {% for producto in deuda.productos %}
+                            <tr>
+                                <td>{{ deuda.fecha.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ producto.producto.nombre }}</td>
+                                <td>{{ producto.cantidad }}</td>
+                                <td>{{ producto.producto.precio|round(2) }}</td>
+                                <td>{{ (producto.cantidad * producto.producto.precio)|round(2) }}</td>
+                                {% set total_general.value = total_general.value + (producto.cantidad * producto.producto.precio) %}
+                            </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-end fw-bold">Total Pendiente:</td>
+                            <td class="fw-bold">{{ total_general.value|round(2) }} USD</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle"></i> Para gestionar el pago de su deuda, por favor contacte al administrador.
+            </div>
+        {% else %}
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle"></i> ¡Felicidades! No tiene deudas pendientes.
+            </div>
+        {% endif %}
+        <div class="d-flex justify-content-end mt-3">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
