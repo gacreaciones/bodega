@@ -39,6 +39,18 @@ def index():
             flash('No se encontraron deudas para este apodo', 'info')
     return render_template('index.html', form=form)
 
+@app.route('/check_db')
+def check_db():
+    # Verificar la URL de conexión
+    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+    
+    # Verificar si puede acceder a Supabase
+    try:
+        result = db.session.execute(text("SELECT current_database()")).scalar()
+        return f"Conectado a: {db_uri}<br>Base de datos actual: {result}"
+    except Exception as e:
+        return f"Error conectando a Supabase: {str(e)}<br>URI: {db_uri}"
+
 @app.route('/test_db')
 def test_db():
     try:
