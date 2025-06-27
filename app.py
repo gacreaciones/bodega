@@ -1,25 +1,17 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, session, abort
-from extensions import db, bcrypt, login_manager  # <-- Importa db desde extensions
+from extensions import db, bcrypt, login_manager
 from flask_login import login_user, logout_user, login_required, current_user
-from forms import ConsultaDeudaForm, PagoForm, LoginForm, ProductoForm, DeudaForm, ProductoDeudaForm, ClienteForm
+from forms import ConsultaDeudaForm, PagoForm, LoginForm, ProductoForm, DeudaForm, ProductoDeudaForm, ClienteForm, DeudaForm, ProductoDeudaForm
 from models import Usuario, Cliente, Producto, Deuda, ProductoDeuda, Pago, PagoParcial
 from config import Config
 from datetime import datetime
-from sqlalchemy import select, text
-import logging
-from logging.handlers import RotatingFileHandler
-
-# Configurar logging
-handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
-handler.setLevel(logging.INFO)
-app.logger.addHandler(handler)
-app.logger.setLevel(logging.INFO)
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Inicializa la base de datos desde extensions
-db.init_app(app) 
+db.init_app(app)
 bcrypt.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -27,17 +19,6 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(Usuario, int(user_id))
-
-@app.route('/test_db')
-def test_db():
-    try:
-        # Ejecutar consulta simple
-        result = db.session.execute(text("SELECT 1")).scalar()
-        app.logger.info(f"Conexión exitosa: {result}")
-        return "Conexión exitosa a la base de datos!"
-    except Exception as e:
-        app.logger.error(f"Error de conexión: {str(e)}")
-        return f"Error de conexión: {str(e)}", 500
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -512,11 +493,3 @@ def eliminar_deuda(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-@app.errorhandler(500)
-def internal_error(error):
-    return render_template('500.html'), 500
-
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('404.html'), 404
