@@ -1,13 +1,17 @@
 import os
-import re
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'una_clave_secreta_muy_segura'
     
-    # Manejo especial para la URL de Supabase
+    # Obtener la variable de entorno DATABASE_URL
     uri = os.getenv("DATABASE_URL")
     
-        if uri:
+    # Manejo de la URI de la base de datos
+    if uri:
+        # Convertir de postgres:// a postgresql:// si es necesario
+        if uri.startswith("postgres://"):
+            uri = uri.replace("postgres://", "postgresql://", 1)
+        
         # Forzar SSL
         if "?" in uri:
             uri += "&sslmode=require"
@@ -17,3 +21,5 @@ class Config:
         SQLALCHEMY_DATABASE_URI = uri
     else:
         SQLALCHEMY_DATABASE_URI = "sqlite:///bodega.db"
+    
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
