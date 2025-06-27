@@ -1,25 +1,36 @@
 import os
+import urllib.parse
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'una_clave_secreta_muy_segura'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # Obtener la variable de entorno DATABASE_URL
+    # Obtener y procesar la URI de la base de datos
     uri = os.getenv("DATABASE_URL")
     
-    # Manejo de la URI de la base de datos
     if uri:
-        # Convertir de postgres:// a postgresql:// si es necesario
-        if uri.startswith("postgres://"):
-            uri = uri.replace("postgres://", "postgresql://", 1)
+        # Decodificar para manejar caracteres especiales
+        decoded_uri = urllib.parse.unquote(uri)
         
-        # Forzar SSL
-        if "?" in uri:
-            uri += "&sslmode=require"
-        else:
-            uri += "?sslmode=require"
+        # Convertir de postgres:// a postgresql://
+        if decoded_uri.startswith("postgres://"):
+            decoded_uri = decoded_uri.replace("postgres://", "postgresql://", 1)
         
-        SQLALCHEMY_DATABASE_URI = uri
+        # Asegurar parámetro SSL
+        if "sslmode=require" not in decoded_uri:
+            if "?" in decoded_uri:
+                decoded_uri += "&sslmode=require"
+            else:
+                decoded_uri += "?sslmode=require"
+        
+        SQLALCHEMY_DATABASE_URI = decoded_uri
     else:
         SQLALCHEMY_DATABASE_URI = "sqlite:///bodega.db"
     
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Para depuración
+    @property
+    def db_info(self):
+        return {
+            'uri': self.SQLALCHEMY_DATABASE_URI,
+            'decoded': urllib.parse.unquote(self.SQLALCHEMY_DATABASE_URI)
+        }
