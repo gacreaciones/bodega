@@ -7,9 +7,13 @@ class Config:
     # Manejo especial para la URL de Supabase
     uri = os.getenv("DATABASE_URL")
     
-    # Conversión necesaria para SQLAlchemy
-    if uri and uri.startswith("postgres://"):
-        uri = uri.replace("postgres://", "postgresql://", 1)
-    
-    SQLALCHEMY_DATABASE_URI = uri or "sqlite:///bodega.db"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+        if uri:
+        # Forzar SSL
+        if "?" in uri:
+            uri += "&sslmode=require"
+        else:
+            uri += "?sslmode=require"
+        
+        SQLALCHEMY_DATABASE_URI = uri
+    else:
+        SQLALCHEMY_DATABASE_URI = "sqlite:///bodega.db"
