@@ -3,7 +3,12 @@
   "builds": [
     {
       "src": "app.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "env": {
+          "DATABASE_URL": "@database_url"
+        }
+      }
     }
   ],
   "routes": [
@@ -11,8 +16,5 @@
       "src": "/(.*)",
       "dest": "app.py"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "@supabase_db_url"
-  }
+  ]
 }
