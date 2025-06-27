@@ -1,27 +1,36 @@
 import os
+import urllib.parse
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'una_clave_secreta_muy_segura'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # Obtener la URI de la base de datos
+    # Obtener y procesar la URI de la base de datos
     uri = os.getenv("DATABASE_URL")
     
     if uri:
-        print(f"Database URL from env: {uri}")
+        # Decodificar para manejar caracteres especiales
+        decoded_uri = urllib.parse.unquote(uri)
         
         # Convertir de postgres:// a postgresql://
-        if uri.startswith("postgres://"):
-            uri = uri.replace("postgres://", "postgresql://", 1)
+        if decoded_uri.startswith("postgres://"):
+            decoded_uri = decoded_uri.replace("postgres://", "postgresql://", 1)
         
-        # Añadir SSL si no está presente
-        if "sslmode" not in uri:
-            if "?" in uri:
-                uri += "&sslmode=require"
+        # Asegurar parámetro SSL
+        if "sslmode=require" not in decoded_uri:
+            if "?" in decoded_uri:
+                decoded_uri += "&sslmode=require"
             else:
-                uri += "?sslmode=require"
+                decoded_uri += "?sslmode=require"
         
-        SQLALCHEMY_DATABASE_URI = uri
+        SQLALCHEMY_DATABASE_URI = decoded_uri
     else:
-        print("Using SQLite fallback database")
         SQLALCHEMY_DATABASE_URI = "sqlite:///bodega.db"
+    
+    # Para depuración
+    @property
+    def db_info(self):
+        return {
+            'uri': self.SQLALCHEMY_DATABASE_URI,
+            'decoded': urllib.parse.unquote(self.SQLALCHEMY_DATABASE_URI)
+        }
