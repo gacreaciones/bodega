@@ -7,6 +7,8 @@ from config import Config
 from datetime import datetime
 from sqlalchemy import select, text
 from sqlalchemy.orm import joinedload
+from flask import jsonify
+import urllib.parse
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -39,17 +41,14 @@ def index():
             flash('No se encontraron deudas para este apodo', 'info')
     return render_template('index.html', form=form)
 
-@app.route('/check_db')
-def check_db():
-    # Verificar la URL de conexión
-    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
-    
-    # Verificar si puede acceder a Supabase
-    try:
-        result = db.session.execute(text("SELECT current_database()")).scalar()
-        return f"Conectado a: {db_uri}<br>Base de datos actual: {result}"
-    except Exception as e:
-        return f"Error conectando a Supabase: {str(e)}<br>URI: {db_uri}"
+@app.route('/db_info')
+def db_info():
+    config = app.config
+    return jsonify({
+        'raw_uri': config.get('DATABASE_URL'),
+        'processed_uri': config.get('SQLALCHEMY_DATABASE_URI'),
+        'decoded_uri': urllib.parse.unquote(config.get('SQLALCHEMY_DATABASE_URI', ''))
+    })
 
 @app.route('/test_db')
 def test_db():
