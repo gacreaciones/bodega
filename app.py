@@ -39,6 +39,14 @@ def index():
             flash('No se encontraron deudas para este apodo', 'info')
     return render_template('index.html', form=form)
 
+@app.route('/test_db')
+def test_db():
+    try:
+        db.engine.connect()
+        return "Conexión exitosa a Supabase!", 200
+    except Exception as e:
+        return f"Error de conexión: {str(e)}", 500
+
 @app.route('/pagar/<int:deuda_id>', methods=['GET', 'POST'])
 def pagar_deuda(deuda_id):
     deuda = db.session.get(Deuda, deuda_id) or abort(404)
