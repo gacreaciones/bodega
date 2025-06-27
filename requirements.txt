@@ -4,4 +4,3 @@ flask-wtf
 flask-login
 flask-bcrypt
 python-dotenv
-psycopg2-binary
