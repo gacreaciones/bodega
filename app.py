@@ -5,7 +5,15 @@ from forms import ConsultaDeudaForm, PagoForm, LoginForm, ProductoForm, DeudaFor
 from models import Usuario, Cliente, Producto, Deuda, ProductoDeuda, Pago, PagoParcial
 from config import Config
 from datetime import datetime
-from sqlalchemy import select
+from sqlalchemy import select, text
+import logging
+from logging.handlers import RotatingFileHandler
+
+# Configurar logging
+handler = RotatingFileHandler('app.log', maxBytes=10000, backupCount=1)
+handler.setLevel(logging.INFO)
+app.logger.addHandler(handler)
+app.logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -19,6 +27,17 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(Usuario, int(user_id))
+
+@app.route('/test_db')
+def test_db():
+    try:
+        # Ejecutar consulta simple
+        result = db.session.execute(text("SELECT 1")).scalar()
+        app.logger.info(f"Conexión exitosa: {result}")
+        return "Conexión exitosa a la base de datos!"
+    except Exception as e:
+        app.logger.error(f"Error de conexión: {str(e)}")
+        return f"Error de conexión: {str(e)}", 500
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
