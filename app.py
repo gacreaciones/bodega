@@ -5,7 +5,7 @@ from forms import ConsultaDeudaForm, PagoForm, LoginForm, ProductoForm, DeudaFor
 from models import Usuario, Cliente, Producto, Deuda, ProductoDeuda, Pago, PagoParcial
 from config import Config
 from datetime import datetime
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.orm import joinedload
 
 app = Flask(__name__)
