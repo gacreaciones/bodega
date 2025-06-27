@@ -5,10 +5,8 @@ from forms import ConsultaDeudaForm, PagoForm, LoginForm, ProductoForm, DeudaFor
 from models import Usuario, Cliente, Producto, Deuda, ProductoDeuda, Pago, PagoParcial
 from config import Config
 from datetime import datetime
-from sqlalchemy import select, text
+from sqlalchemy import select
 from sqlalchemy.orm import joinedload
-from dotenv import load_dotenv
-load_dotenv()  # Carga las variables del archivo .env
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -21,13 +19,6 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(Usuario, int(user_id))
-
-@app.route('/env')
-def show_env():
-    return {
-        'DATABASE_URL': os.getenv('DATABASE_URL'),
-        'SQLALCHEMY_DATABASE_URI': app.config.get('SQLALCHEMY_DATABASE_URI')
-    }
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
