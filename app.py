@@ -7,6 +7,8 @@ from config import Config
 from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
+from dotenv import load_dotenv
+load_dotenv()  # Carga las variables del archivo .env
 
 app = Flask(__name__)
 app.config.from_object(Config)
