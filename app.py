@@ -22,6 +22,13 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return db.session.get(Usuario, int(user_id))
 
+@app.route('/env')
+def show_env():
+    return {
+        'DATABASE_URL': os.getenv('DATABASE_URL'),
+        'SQLALCHEMY_DATABASE_URI': app.config.get('SQLALCHEMY_DATABASE_URI')
+    }
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = ConsultaDeudaForm()
