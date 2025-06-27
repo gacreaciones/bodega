@@ -26,11 +26,3 @@ class Config:
         SQLALCHEMY_DATABASE_URI = decoded_uri
     else:
         SQLALCHEMY_DATABASE_URI = "sqlite:///bodega.db"
-    
-    # Para depuración
-    @property
-    def db_info(self):
-        return {
-            'uri': self.SQLALCHEMY_DATABASE_URI,
-            'decoded': urllib.parse.unquote(self.SQLALCHEMY_DATABASE_URI)
-        }
