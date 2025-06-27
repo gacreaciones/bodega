@@ -1,18 +1,18 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, session, abort
-from extensions import db, bcrypt, login_manager
+from extensions import db, bcrypt, login_manager  # <-- Importa db desde extensions
 from flask_login import login_user, logout_user, login_required, current_user
-from forms import ConsultaDeudaForm, PagoForm, LoginForm, ProductoForm, DeudaForm, ProductoDeudaForm, ClienteForm, DeudaForm, ProductoDeudaForm
+from forms import ConsultaDeudaForm, PagoForm, LoginForm, ProductoForm, DeudaForm, ProductoDeudaForm, ClienteForm
 from models import Usuario, Cliente, Producto, Deuda, ProductoDeuda, Pago, PagoParcial
 from config import Config
 from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
-from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-db = SQLAlchemy(app)
+# Inicializa la base de datos desde extensions
+db.init_app(app) 
 bcrypt.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'login'
